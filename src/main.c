@@ -1,6 +1,7 @@
 #include <msp430g2553.h>
 #include <stdint.h>
 #include "motorFunctions.c"
+#include "ADC.h"
 
 void main(void)
 {
@@ -8,8 +9,12 @@ void main(void)
     BCSCTL1 = CALBC1_1MHZ;     // Set clock frequency to 1MHz
     DCOCTL = CALDCO_1MHZ;      // Set clock frequency to 1MHz
 
-    motorInit();
-    setMotorParams(50, 50, 0b11);
-
-    while (1);                   // Enter infinite loop (timer is running autonomously)
+    while (1) {
+        motorInit();
+        ADC_init();
+        ADC_Demarrer_conversion(0);
+        char res = (ADC_Lire_resultat() < 500);
+        setMotorParams(50, 50, res);
+    }
+ 
 }
