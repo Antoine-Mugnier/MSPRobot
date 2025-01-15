@@ -6,9 +6,10 @@
 */
 void motorInit();
 
-/*  0xAB with 1 forward and 0 backwards
+/*
     duty cycle in % assuming we don't change the pwm period
+    0bABdir A and B to select which motor to affect and 0 backwards and 1 forwards for dir.
 */
-void setMotorParams(uint8_t dutyMotor1, uint8_t dutyMotor2, char direction);
+void setMotorParams(uint8_t dutyMotor, char MotorAndDirection);
 
 #endif

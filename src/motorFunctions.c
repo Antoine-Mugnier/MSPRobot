@@ -22,15 +22,18 @@ void motorInit() {
     P2OUT &= ~BIT5;
 }
 
-void setMotorParams(uint8_t dutyMotor1, uint8_t dutyMotor2, char direction){
+void setMotorParams(uint8_t dutyMotor, char MotorAndDirection){
     
-    TA1CCR1 = dutyMotor1;        // Duty cycle for motor 1
-    TA1CCR2 = dutyMotor2;        // Duty cycle for motor 2
+    if (MotorAndDirection & BIT2) {
+        TA1CCR1 = dutyMotor;        // Duty cycle for motor 1
+        if (MotorAndDirection & BIT0) P2OUT &= ~BIT1;
+        else P2OUT |= BIT1;
 
-    // Set direction for both motors
-    if (direction & BIT0) P2OUT &= ~BIT1;
-    else P2OUT |= BIT1;
+    }
+    if (MotorAndDirection & BIT1) {
+        TA1CCR2 = dutyMotor;        // Duty cycle for motor 2
+        if (MotorAndDirection & BIT0) P2OUT |= BIT5;
+        else P2OUT &= ~BIT5;
 
-    if (direction & BIT1) P2OUT |= BIT5;
-    else P2OUT &= ~BIT5;
+    }
 }
