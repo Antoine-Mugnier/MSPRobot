@@ -3,7 +3,7 @@
 #include "constants.h"
 #include "motorFunctions.h"
 #include "ADC.h"
-//#include "Afficheur.h"
+#include "Afficheur.h"
 #include "utils.h"
 
 
@@ -17,35 +17,44 @@ void main(void)
 
     progTimeInit();
     motorInit();
+    setMotorParams(100, 0b111);
     ADC_init();
+    Aff_Init();
     
     int g, d;
     uint16_t oldTime = 0;
+    unsigned char msg [4] = "l r ";
     while (1)
     {
-        if (time - oldTime >= 1) {
-            oldTime = time;
-            ADC_Demarrer_conversion(VOIE_CAPT_LIGNE_G);
-            g = ADC_Lire_resultat();
-            ADC_Demarrer_conversion(VOIE_CAPT_LIGNE_D);
-            d = ADC_Lire_resultat();
+        ADC_Demarrer_conversion(VOIE_CAPT_LIGNE_G);
+        g = ADC_Lire_resultat();
+        ADC_Demarrer_conversion(VOIE_CAPT_LIGNE_D);
+        d = ADC_Lire_resultat();
 
-            if (g < 0x3f0)
-            {
-                setMotorParams(100, 0b101);
-            }
-            else if (g > 0x260)
-            {
-                setMotorParams(100, 0b100);
-            }
-            if (d < 0x3f0)
-            {
-                setMotorParams(100, 0b011);
-            }
-            else if (d > 0x260)
-            {
-                setMotorParams(100, 0b010);
-            }
+        
+        if (g < 0x200) // Si gauche blanc
+        {
+            setMotorParams(0, 0b101);
+            msg[1] = 'u';
         }
+        else if (g > 0x300) // Si gauche noir
+        {
+            setMotorParams(100, 0b101);
+            msg[1] = 'n';
+        }
+        if (d < 0x200) // Si droite blanc
+        {
+            setMotorParams(0, 0b011);
+            msg[3] = 'u';
+        }
+        else if (d > 0x2A0) // Si droite noir
+        {
+            setMotorParams(100, 0b011);
+            msg[3] = 'n';
+        }
+        Aff_Efface();
+        Aff_4carac(msg);
+        
+
     }
 }
