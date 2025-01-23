@@ -26,7 +26,7 @@ void encoderInit(void) {
 #pragma vector=PORT2_VECTOR
 __interrupt void Port_2_ISR(void) {
     if (P2IFG & BIT3) {      // Si interruption sur P2.3
-        encoderA_pulse_count++;  // Incrémenter le compteur du codeur A
+        encoderB_pulse_count++;  // Incrémenter le compteur du codeur B
         P2IFG &= ~BIT3;      // Effacer le drapeau d'interruption
     }
 }
@@ -35,7 +35,7 @@ __interrupt void Port_2_ISR(void) {
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1_ISR(void) {
     if (P1IFG & BIT6) {      // Si interruption sur P1.6
-        encoderB_pulse_count++;  // Incrémenter le compteur du codeur B
+        encoderA_pulse_count++;  // Incrémenter le compteur du codeur A
         P1IFG &= ~BIT6;      // Effacer le drapeau d'interruption
     }
 }
