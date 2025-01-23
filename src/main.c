@@ -6,6 +6,27 @@
 #include "Afficheur.h"
 #include "utils.h"
 
+// One step of the line following routine. Intended to be put in main program loop.
+void lineFollowRoutine(void) 
+{
+    int left, right;
+
+    ADC_Demarrer_conversion(VOIE_CAPT_LIGNE_G);
+    left = ADC_Lire_resultat();
+    ADC_Demarrer_conversion(VOIE_CAPT_LIGNE_D);
+    right = ADC_Lire_resultat();
+    
+    //Aff_valeur((left << 4 & 0xFF00) | right >> 4 & 0x00FF);
+
+    if (left < WHITE_THRESH) setMotorParams(MOTOR_SLOW_SPEED, 0b101);
+
+    else if (left > L_BLACK_THRESH) setMotorParams(MOTOR_SPEED, 0b101);
+
+    if (right < WHITE_THRESH) setMotorParams(MOTOR_SLOW_SPEED, 0b011);
+
+    else if (right > R_BLACK_THRESH) setMotorParams(MOTOR_SPEED, 0b011);
+}
+
 
 void main(void)
 {
@@ -17,44 +38,16 @@ void main(void)
 
     progTimeInit();
     motorInit();
-    setMotorParams(100, 0b111);
     ADC_init();
     Aff_Init();
-    
-    int g, d;
+
     uint16_t oldTime = 0;
-    unsigned char msg [4] = "l r ";
+
+    setMotorParams(20, 0b111);
+
     while (1)
     {
-        ADC_Demarrer_conversion(VOIE_CAPT_LIGNE_G);
-        g = ADC_Lire_resultat();
-        ADC_Demarrer_conversion(VOIE_CAPT_LIGNE_D);
-        d = ADC_Lire_resultat();
-
-        
-        if (g < 0x200) // Si gauche blanc
-        {
-            setMotorParams(0, 0b101);
-            msg[1] = 'u';
-        }
-        else if (g > 0x300) // Si gauche noir
-        {
-            setMotorParams(100, 0b101);
-            msg[1] = 'n';
-        }
-        if (d < 0x200) // Si droite blanc
-        {
-            setMotorParams(0, 0b011);
-            msg[3] = 'u';
-        }
-        else if (d > 0x2A0) // Si droite noir
-        {
-            setMotorParams(100, 0b011);
-            msg[3] = 'n';
-        }
-        Aff_Efface();
-        Aff_4carac(msg);
-        
-
+        lineFollowRoutine();
     }
+
 }
